@@ -3,24 +3,18 @@ package com.example.museo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.museo.componets.CardGrid
 import com.example.museo.componets.DrawerContent
 import com.example.museo.componets.SearchNav
@@ -32,13 +26,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MuseoTheme {
-
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    MainScreen()
-                }
+                MainScreen()
             }
         }
     }
@@ -52,7 +40,6 @@ fun MainScreen() {
     var searchText by remember { mutableStateOf("") }
 
     val items = List(20) { index -> "Item $index" }
-    val filteredItems = items.filter { it.contains(searchText, ignoreCase = true) }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -65,7 +52,7 @@ fun MainScreen() {
             Scaffold(
                 topBar = {
                     TopAppBar(
-                        title = { Text("Museo App") },
+                        title = { Text("My Compose App") },
                         navigationIcon = {
                             IconButton(onClick = { scope.launch { drawerState.open() } }) {
                                 Icon(Icons.Filled.Menu, contentDescription = "Menu")
@@ -73,11 +60,10 @@ fun MainScreen() {
                         }
                     )
                 },
+
                 content = { paddingValues ->
                     Column(modifier = Modifier.padding(paddingValues)) {
-                        SearchNav(searchText) { searchText = it }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        CardGrid(filteredItems)
+                        CardGrid(items)
                     }
                 }
             )

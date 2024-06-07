@@ -29,7 +29,6 @@ fun DrawerContent() {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // Container for the drawer
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -45,7 +44,6 @@ fun DrawerContent() {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Drawer items
         DrawerItem(
             icon = Icons.Default.Home,
             label = "Home"
