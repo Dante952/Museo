@@ -60,7 +60,7 @@ fun CardGrid(items: List<String>) {
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.fillMaxSize()
-                .padding(top = 60.dp)
+                .padding(top = 70.dp)
         ) {
             items(filteredItems.size) { index ->
                 CardItem(
