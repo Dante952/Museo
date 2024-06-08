@@ -10,14 +10,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.museo.componets.CardGrid
 import com.example.museo.componets.DrawerContent
-import com.example.museo.componets.SearchNav
 import com.example.museo.ui.theme.MuseoTheme
 import kotlinx.coroutines.launch
 
