@@ -12,6 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Museo"
         tools:targetApi="31">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyA4M-MW3f2Yto7_KPd6QNusO7NuGfcLVjc"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -24,5 +29,9 @@
             </intent-filter>
         </activity>
     </application>
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
 </manifest>

@@ -12,19 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.museo.componets.CardGrid
 import com.example.museo.componets.DrawerContent
+import com.example.museo.componets.GoogleMapComposable
 import com.example.museo.ui.theme.MuseoTheme
 import kotlinx.coroutines.launch
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            MuseoTheme {
-                MainScreen()
-            }
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,7 +47,7 @@ fun MainScreen() {
 
                 content = { paddingValues ->
                     Column(modifier = Modifier.padding(paddingValues)) {
-                        CardGrid(items)
+                        GoogleMapComposable()
                     }
                 }
             )
@@ -65,12 +55,23 @@ fun MainScreen() {
     )
 }
 
-
-
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     MuseoTheme {
         MainScreen()
+    }
+}
+
+
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            MuseoTheme {
+                MainScreen()
+            }
+        }
     }
 }
