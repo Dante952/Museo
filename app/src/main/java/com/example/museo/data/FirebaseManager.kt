@@ -1,36 +1,64 @@
 package com.example.museo.data
-
-import android.content.ContentValues.TAG
 import android.net.Uri
 import android.util.Log
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storage
 
 class FirebaseManager {
 
     private val db = FirebaseFirestore.getInstance()
+    private val storage = Firebase.storage
 
-    fun subirDatosPintura(titulo: String, descripcion: String) {
-        // Crear un nuevo documento en la colección 'pinturas'
+    fun crearPintura(titulo: String, descripcion: String, autor: String, nombreArchivo: String) {
+        // Referencia a la colección "pinturas" en Firestore
         val pinturasRef = db.collection("pinturas")
 
-        // Crear un mapa con los datos a subir
-        val data = hashMapOf(
-            "titulo" to titulo,
-            "descripcion" to descripcion
-        )
+        // Obtener la URL de la imagen desde Firebase Storage
+        obtenerURLImagen(nombreArchivo)
+            .addOnSuccessListener { uri ->
+                val imagenURL = uri.toString()
 
-        // Agregar el documento a la colección
-        pinturasRef.add(data)
-            .addOnSuccessListener { documentReference ->
-                Log.d(TAG, "Documento agregado con ID: ${documentReference.id}")
+                // Crear un documento con los datos de la pintura incluyendo la URL de la imagen
+                val data = hashMapOf(
+                    "titulo" to titulo,
+                    "descripcion" to descripcion,
+                    "autor" to autor,
+                    "imagenURL" to imagenURL
+                )
+
+                // Guardar el documento en Firestore
+                pinturasRef.add(data)
+                    .addOnSuccessListener { documentReference ->
+                        Log.d(TAG, "Documento agregado con ID: ${documentReference.id}")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e(TAG, "Error al agregar documento", e)
+                    }
             }
-            .addOnFailureListener { e ->
-                Log.e(TAG, "Error al agregar documento", e)
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error al obtener URL de la imagen", exception)
             }
     }
-    fun obtenerPinturas(onSuccess: (List<PaintingData>) -> Unit, onFailure: (Exception) -> Unit) {
+
+    private fun obtenerURLImagen(nombreArchivo: String): Task<Uri> {
+        // Referencia al archivo en Firebase Storage
+        val storageRef = storage.reference.child("Imagenes/$nombreArchivo")
+
+        // Obtener la URL del archivo
+        return storageRef.downloadUrl
+    }
+
+    fun obtenerPinturas(
+        onSuccess: (List<PaintingData>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        // Referencia a la colección "pinturas" en Firestore
         val pinturasRef = db.collection("pinturas")
 
+        // Obtener todas las pinturas desde Firestore
         pinturasRef.get()
             .addOnSuccessListener { result ->
                 val listaPinturas = mutableListOf<PaintingData>()
@@ -38,13 +66,9 @@ class FirebaseManager {
                     val name = document.getString("titulo") ?: ""
                     val author = document.getString("autor") ?: ""
                     val description = document.getString("descripcion") ?: ""
-                    // Aquí se usa "titulo", "autor" y "descripcion" según como los definiste en Firestore
+                    val imageUrl = document.getString("imagenURL") ?: ""
 
-                    // Asumo que no estás utilizando las URL de imagen y audio por ahora en Firestore
-                    val imageUri: Uri? = null
-                    val audioUri: Uri? = null
-
-                    val paintingData = PaintingData(name, author, description, imageUri, audioUri)
+                    val paintingData = PaintingData(name, author, description, imageUrl)
                     listaPinturas.add(paintingData)
                 }
                 onSuccess(listaPinturas)
@@ -58,10 +82,10 @@ class FirebaseManager {
         private const val TAG = "FirebaseManager"
     }
 }
+
 data class PaintingData(
     val name: String,
     val author: String,
     val description: String,
-    val imageUri: Uri?, // Uri de la imagen local
-    val audioUri: Uri?   // Uri del audio local
+    val imageUrl: String? // URL de la imagen
 )
