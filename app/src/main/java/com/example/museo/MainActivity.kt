@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.museo.componets.CardGrid
 import com.example.museo.componets.DrawerContent
 import com.example.museo.componets.GoogleMapComposable
+import com.example.museo.componets.RoomScreen
 import com.example.museo.ui.theme.MuseoTheme
 import kotlinx.coroutines.launch
 
@@ -47,7 +48,7 @@ fun MainScreen() {
 
                 content = { paddingValues ->
                     Column(modifier = Modifier.padding(paddingValues)) {
-                        GoogleMapComposable()
+                        RoomScreen()
                     }
                 }
             )
