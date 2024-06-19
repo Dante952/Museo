@@ -10,12 +10,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
-import coil.compose.rememberAsyncImagePainter
+
+import coil.compose.rememberImagePainter
 import com.example.museo.data.FirebaseManager
 import com.example.museo.data.PaintingData
 import com.example.museo.ui.theme.MuseoTheme
@@ -31,8 +34,14 @@ class MainActivity : ComponentActivity() {
             MuseoTheme {
                 MainScreen(firebaseManager)
             }
-
-            //firebaseManager.crearPintura("La Noche Estrellada", "Óleo sobre lienzo", "Vincent van Gogh", "img2.jpg")
+            /*
+            firebaseManager.crearPintura(
+                "Mona Lisa",
+                "Pintura famosa",
+                "Leonardo da Vinci",
+                "img1.jpg",
+                "audio01.mp3"
+            )*/
 
 
         }
@@ -102,7 +111,7 @@ fun PinturaItem(pintura: PaintingData) {
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(4.dp),
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -113,12 +122,30 @@ fun PinturaItem(pintura: PaintingData) {
             Spacer(modifier = Modifier.height(8.dp))
             pintura.imageUrl?.let { url ->
                 Image(
-                    painter = rememberAsyncImagePainter(url),
+                    painter = rememberImagePainter(url),
                     contentDescription = "Imagen de ${pintura.name}",
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp)
                 )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // Botón de reproducción de audio
+                IconButton(
+                    onClick = {
+                        // Aquí implementar la lógica de reproducción de audio
+                        pintura.audioUrl?.let { audioUrl ->
+                            Log.d("PinturaItem", "Reproduciendo audio: $audioUrl")
+                            //implementar la lógica para reproducir el audio
+
+                        }
+                    }
+                ) {
+                    Icon(Icons.Filled.PlayArrow, contentDescription = "Reproducir")
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Reproducir audio", style = MaterialTheme.typography.bodyMedium)
             }
         }
     }

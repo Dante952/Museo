@@ -9,33 +9,43 @@ import com.google.firebase.storage.ktx.storage
 
 class FirebaseManager {
 
+
     private val db = FirebaseFirestore.getInstance()
     private val storage = Firebase.storage
 
-    fun crearPintura(titulo: String, descripcion: String, autor: String, nombreArchivo: String) {
-        // Referencia a la colección "pinturas" en Firestore
+    fun crearPintura(titulo: String, descripcion: String, autor: String, nombreArchivoImagen: String, nombreArchivoAudio: String) {
         val pinturasRef = db.collection("pinturas")
 
-        // Obtener la URL de la imagen desde Firebase Storage
-        obtenerURLImagen(nombreArchivo)
-            .addOnSuccessListener { uri ->
-                val imagenURL = uri.toString()
+        // Obtener URL de la imagen desde Firebase Storage
+        obtenerURL("Imagenes/$nombreArchivoImagen")
+            .addOnSuccessListener { imagenUri ->
+                val imagenURL = imagenUri.toString()
 
-                // Crear un documento con los datos de la pintura incluyendo la URL de la imagen
-                val data = hashMapOf(
-                    "titulo" to titulo,
-                    "descripcion" to descripcion,
-                    "autor" to autor,
-                    "imagenURL" to imagenURL
-                )
+                // Obtener URL del audio desde Firebase Storage
+                obtenerURL("Audios/$nombreArchivoAudio")
+                    .addOnSuccessListener { audioUri ->
+                        val audioURL = audioUri.toString()
 
-                // Guardar el documento en Firestore
-                pinturasRef.add(data)
-                    .addOnSuccessListener { documentReference ->
-                        Log.d(TAG, "Documento agregado con ID: ${documentReference.id}")
+                        // Crear un documento con los datos de la pintura incluyendo las URLs
+                        val data = hashMapOf(
+                            "titulo" to titulo,
+                            "descripcion" to descripcion,
+                            "autor" to autor,
+                            "imagenURL" to imagenURL,
+                            "audioURL" to audioURL
+                        )
+
+                        // Guardar el documento en Firestore
+                        pinturasRef.add(data)
+                            .addOnSuccessListener { documentReference ->
+                                Log.d(TAG, "Documento agregado con ID: ${documentReference.id}")
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e(TAG, "Error al agregar documento", e)
+                            }
                     }
-                    .addOnFailureListener { e ->
-                        Log.e(TAG, "Error al agregar documento", e)
+                    .addOnFailureListener { exception ->
+                        Log.e(TAG, "Error al obtener URL del audio", exception)
                     }
             }
             .addOnFailureListener { exception ->
@@ -43,11 +53,8 @@ class FirebaseManager {
             }
     }
 
-    private fun obtenerURLImagen(nombreArchivo: String): Task<Uri> {
-        // Referencia al archivo en Firebase Storage
-        val storageRef = storage.reference.child("Imagenes/$nombreArchivo")
-
-        // Obtener la URL del archivo
+    private fun obtenerURL(rutaArchivo: String): Task<Uri> {
+        val storageRef = storage.reference.child(rutaArchivo)
         return storageRef.downloadUrl
     }
 
@@ -55,10 +62,8 @@ class FirebaseManager {
         onSuccess: (List<PaintingData>) -> Unit,
         onFailure: (Exception) -> Unit
     ) {
-        // Referencia a la colección "pinturas" en Firestore
         val pinturasRef = db.collection("pinturas")
 
-        // Obtener todas las pinturas desde Firestore
         pinturasRef.get()
             .addOnSuccessListener { result ->
                 val listaPinturas = mutableListOf<PaintingData>()
@@ -67,8 +72,9 @@ class FirebaseManager {
                     val author = document.getString("autor") ?: ""
                     val description = document.getString("descripcion") ?: ""
                     val imageUrl = document.getString("imagenURL") ?: ""
+                    val audioUrl = document.getString("audioURL") ?: ""
 
-                    val paintingData = PaintingData(name, author, description, imageUrl)
+                    val paintingData = PaintingData(name, author, description, imageUrl, audioUrl)
                     listaPinturas.add(paintingData)
                 }
                 onSuccess(listaPinturas)
@@ -87,5 +93,6 @@ data class PaintingData(
     val name: String,
     val author: String,
     val description: String,
-    val imageUrl: String? // URL de la imagen
+    val imageUrl: String?, // URL de la imagen
+    val audioUrl: String? // URL del audio
 )
