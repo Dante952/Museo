@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.museo.componets.CardGrid
 import com.example.museo.componets.DrawerContent
+import com.example.museo.componets.GoogleMapComposable
 import com.example.museo.ui.theme.MuseoTheme
 import kotlinx.coroutines.launch
 
