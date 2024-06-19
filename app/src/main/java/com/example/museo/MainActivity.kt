@@ -49,7 +49,7 @@ fun MainScreen() {
             Scaffold(
                 topBar = {
                     TopAppBar(
-                        title = { Text("My Compose App") },
+                        title = { Text("App Museo") },
                         navigationIcon = {
                             IconButton(onClick = { scope.launch { drawerState.open() } }) {
                                 Icon(Icons.Filled.Menu, contentDescription = "Menu")
@@ -61,7 +61,7 @@ fun MainScreen() {
                     Column(modifier = Modifier.padding(paddingValues)) {
                         when (selectedScreen) {
                             "Home" -> HomeScreen()
-                            "Settings" -> SettingsScreen()
+                            "Location" -> LocationScreen()
                             "About" -> AboutScreen()
                         }
                     }
@@ -79,8 +79,8 @@ fun HomeScreen() {
 }
 
 @Composable
-fun SettingsScreen() {
-
+fun LocationScreen() {
+    GoogleMapComposable()
 }
 
 

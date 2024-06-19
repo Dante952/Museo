@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -51,8 +52,8 @@ fun DrawerContent(onItemSelected: (String) -> Unit) {
             onClick = onItemSelected
         )
         DrawerItem(
-            icon = Icons.Default.Settings,
-            label = "Settings",
+            icon = Icons.Default.LocationOn,
+            label = "Location",
             onClick = onItemSelected
         )
         DrawerItem(

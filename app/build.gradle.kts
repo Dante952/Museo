@@ -66,5 +66,20 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
     implementation ("androidx.navigation:navigation-compose:2.4.0-alpha10")
+    //Maps
+    implementation("com.google.android.gms:play-services-maps:18.0.2")
+    implementation("com.google.maps.android:maps-compose:2.1.1")
+    implementation("androidx.compose.ui:ui:1.3.1")
+    implementation("androidx.compose.material3:material3:1.1.1")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
+    //Routes
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.moshi:moshi:1.12.0")
+    implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
 }
