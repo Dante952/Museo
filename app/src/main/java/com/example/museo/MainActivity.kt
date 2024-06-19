@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.museo.componets.CardGrid
 import com.example.museo.componets.DrawerContent
 import com.example.museo.ui.theme.MuseoTheme
@@ -31,15 +32,17 @@ class MainActivity : ComponentActivity() {
 fun MainScreen() {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    var searchText by remember { mutableStateOf("") }
 
-    val items = List(20) { index -> "Item $index" }
+    var selectedScreen by remember { mutableStateOf("Home") }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                DrawerContent()
+                DrawerContent(onItemSelected = { label ->
+                    selectedScreen = label
+                    scope.launch { drawerState.close() }
+                })
             }
         },
         content = {
@@ -54,15 +57,37 @@ fun MainScreen() {
                         }
                     )
                 },
-
                 content = { paddingValues ->
                     Column(modifier = Modifier.padding(paddingValues)) {
-                        CardGrid(items)
+                        when (selectedScreen) {
+                            "Home" -> HomeScreen()
+                            "Settings" -> SettingsScreen()
+                            "About" -> AboutScreen()
+                        }
                     }
                 }
             )
         }
     )
+}
+
+
+@Composable
+fun HomeScreen() {
+    val items = List(20) { index -> "Item $index" }
+    CardGrid(items = items)
+}
+
+@Composable
+fun SettingsScreen() {
+
+}
+
+
+
+@Composable
+fun AboutScreen() {
+    Text(text = "About Screen", modifier = Modifier.padding(16.dp))
 }
 
 

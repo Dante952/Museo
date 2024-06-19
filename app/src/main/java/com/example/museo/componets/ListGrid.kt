@@ -1,5 +1,6 @@
 package com.example.museo.componets
 
+import android.media.MediaPlayer
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,19 +20,34 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.sp
+import com.example.museo.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun CardGrid(items: List<String>) {
@@ -107,6 +124,34 @@ fun CardItem(index: Int, content: String, expanded: Boolean, onClick: () -> Unit
 
 @Composable
 fun ExpandedCard(index: Int, content: String, onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    val mediaPlayer = remember { MediaPlayer.create(context, R.raw.sample_audio) }
+    var isPlaying by remember { mutableStateOf(false) }
+    var sliderPosition by remember { mutableStateOf(0f) }
+    val maxSliderValue = mediaPlayer.duration.toFloat()
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(isPlaying) {
+        if (isPlaying) {
+            mediaPlayer.start()
+            coroutineScope.launch {
+                while (isPlaying && mediaPlayer.isPlaying) {
+                    sliderPosition = mediaPlayer.currentPosition.toFloat()
+                    delay(1000L)
+                }
+            }
+        } else {
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.pause()
+            }
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            mediaPlayer.release()
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -151,6 +196,30 @@ fun ExpandedCard(index: Int, content: String, onDismiss: () -> Unit) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
+                    // Barra de reproducción de audio con botón de play
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        IconButton(onClick = {
+                            isPlaying = !isPlaying
+                        }) {
+                            Icon(
+                                imageVector = if (isPlaying) Icons.Default.Close else Icons.Default.PlayArrow,
+                                contentDescription = if (isPlaying) "Pause" else "Play"
+                            )
+                        }
+                        Slider(
+                            value = sliderPosition,
+                            onValueChange = { position ->
+                                sliderPosition = position
+                                mediaPlayer.seekTo(position.toInt())
+                            },
+                            valueRange = 0f..maxSliderValue,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "More details about item #$index. Here you can add additional information that will be shown when the card is expanded.",
@@ -162,7 +231,6 @@ fun ExpandedCard(index: Int, content: String, onDismiss: () -> Unit) {
         }
     }
 }
-
 @Composable
 fun SearchNav(searchText: String, onSearchTextChanged: (String) -> Unit) {
     TextField(
