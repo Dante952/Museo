@@ -1,6 +1,7 @@
 package com.example.museo
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -16,8 +17,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import coil.compose.rememberImagePainter
 import com.example.museo.componets.CardGrid
 import com.example.museo.componets.DrawerContent
+import com.example.museo.componets.GoogleMapComposable
+import com.example.museo.data.FirebaseManager
+import com.example.museo.data.PaintingData
 import com.example.museo.ui.theme.MuseoTheme
 import kotlinx.coroutines.launch
 
@@ -29,7 +34,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MuseoTheme {
-                MainScreen()
+                MainScreen(firebaseManager)
             }
         }
     }
@@ -37,7 +42,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(firebaseManager: FirebaseManager) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -69,7 +74,7 @@ fun MainScreen() {
                 content = { paddingValues ->
                     Column(modifier = Modifier.padding(paddingValues)) {
                         when (selectedScreen) {
-                            "Home" -> HomeScreen()
+                            "Home" -> HomeScreen(firebaseManager)
                             "Location" -> LocationScreen()
                             "About" -> AboutScreen()
                         }
@@ -82,9 +87,29 @@ fun MainScreen() {
 
 
 @Composable
-fun HomeScreen() {
-    val items = List(20) { index -> "Item $index" }
-    CardGrid(items = items)
+fun HomeScreen(firebaseManager: FirebaseManager) {
+
+    var pinturas by remember { mutableStateOf<List<PaintingData>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        firebaseManager.obtenerPinturas(
+            onSuccess = { listaPinturas ->
+                pinturas = listaPinturas
+                // Log para verificar los datos obtenidos
+                listaPinturas.forEach {
+                    Log.d("MainScreen", "Pintura: $it")
+                }
+            },
+            onFailure = { exception ->
+                Log.e("MainScreen", "Error al obtener pinturas", exception)
+            }
+        )
+    }
+
+
+    CardGrid(items = pinturas)
+
+
 }
 
 @Composable
@@ -157,6 +182,6 @@ fun PinturaItem(pintura: PaintingData) {
 @Composable
 fun DefaultPreview() {
     MuseoTheme {
-        MainScreen()
+        MainScreen(FirebaseManager())
     }
 }

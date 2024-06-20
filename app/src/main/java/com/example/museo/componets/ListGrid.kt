@@ -4,6 +4,7 @@ import android.media.MediaPlayer
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,15 +46,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.example.museo.R
+import com.example.museo.data.PaintingData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun CardGrid(items: List<String>) {
+fun CardGrid(items: List<PaintingData>) {
     var expandedIndex by remember { mutableStateOf<Int?>(null) }
     var searchText by remember { mutableStateOf("") }
-    val filteredItems = items.filter { it.contains(searchText, ignoreCase = true) }
+    val filteredItems = items//.filter { it.contains(searchText, ignoreCase = true) }
 
     Box {
         SearchNav(searchText) { searchText = it }
@@ -86,13 +90,13 @@ fun CardGrid(items: List<String>) {
 }
 
 @Composable
-fun CardItem(index: Int, content: String, expanded: Boolean, onClick: () -> Unit) {
+fun CardItem(index: Int, content: PaintingData, expanded: Boolean, onClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(8.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(300.dp)
             .clickable { onClick() }
     ) {
         Column(
@@ -102,19 +106,25 @@ fun CardItem(index: Int, content: String, expanded: Boolean, onClick: () -> Unit
         ) {
             Box(
                 modifier = Modifier
-                    .height(80.dp)
+                    .height(200.dp)
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.primaryContainer)
-            )
+            ) {
+                Image(
+                    painter = rememberAsyncImagePainter(model = content.imageUrl),
+                    contentDescription = "Image #$index",
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Headline #$index",
+                text = content.name,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.padding(vertical = 4.dp)
             )
             Text(
-                text = content,
+                text = content.author,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -123,16 +133,25 @@ fun CardItem(index: Int, content: String, expanded: Boolean, onClick: () -> Unit
 }
 
 @Composable
-fun ExpandedCard(index: Int, content: String, onDismiss: () -> Unit) {
+fun ExpandedCard(index: Int, content: PaintingData, onDismiss: () -> Unit) {
     val context = LocalContext.current
-    val mediaPlayer = remember { MediaPlayer.create(context, R.raw.sample_audio) }
+    val mediaPlayer = remember { MediaPlayer() }
     var isPlaying by remember { mutableStateOf(false) }
     var sliderPosition by remember { mutableStateOf(0f) }
+    var isPrepared by remember { mutableStateOf(false) }
     val maxSliderValue = mediaPlayer.duration.toFloat()
     val coroutineScope = rememberCoroutineScope()
 
+    LaunchedEffect(Unit) {
+        mediaPlayer.setDataSource(content.audioUrl)
+        mediaPlayer.setOnPreparedListener {
+            isPrepared = true
+        }
+        mediaPlayer.prepareAsync()
+    }
+
     LaunchedEffect(isPlaying) {
-        if (isPlaying) {
+        if (isPlaying && isPrepared) {
             mediaPlayer.start()
             coroutineScope.launch {
                 while (isPlaying && mediaPlayer.isPlaying) {
@@ -182,16 +201,22 @@ fun ExpandedCard(index: Int, content: String, onDismiss: () -> Unit) {
                             .height(200.dp)
                             .fillMaxWidth()
                             .background(MaterialTheme.colorScheme.primaryContainer)
-                    )
+                    ) {
+                        Image(
+                            painter = rememberAsyncImagePainter(model = content.imageUrl),
+                            contentDescription = "Image #$index",
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Headline #$index",
+                        text = content.name,
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
                     Text(
-                        text = content,
+                        text = content.author,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(vertical = 4.dp)
@@ -222,7 +247,7 @@ fun ExpandedCard(index: Int, content: String, onDismiss: () -> Unit) {
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "More details about item #$index. Here you can add additional information that will be shown when the card is expanded.",
+                        text = content.description,
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
