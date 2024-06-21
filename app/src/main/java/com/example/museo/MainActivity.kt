@@ -124,60 +124,6 @@ fun AboutScreen() {
     Text(text = "About Screen", modifier = Modifier.padding(16.dp))
 }
 
-@Composable
-fun PinturasList(pinturas: List<PaintingData>) {
-    LazyColumn {
-        items(pinturas) { pintura ->
-            PinturaItem(pintura)
-        }
-    }
-}
-
-@Composable
-fun PinturaItem(pintura: PaintingData) {
-    Card(
-        modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(4.dp),
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(text = "Título: ${pintura.name}", style = MaterialTheme.typography.titleSmall)
-            Text(text = "Autor: ${pintura.author}", style = MaterialTheme.typography.bodySmall)
-            Text(text = "Descripción: ${pintura.description}", style = MaterialTheme.typography.bodyMedium)
-            Spacer(modifier = Modifier.height(8.dp))
-            pintura.imageUrl?.let { url ->
-                Image(
-                    painter = rememberImagePainter(url),
-                    contentDescription = "Imagen de ${pintura.name}",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                )
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                // Botón de reproducción de audio
-                IconButton(
-                    onClick = {
-                        // Aquí implementar la lógica de reproducción de audio
-                        pintura.audioUrl?.let { audioUrl ->
-                            Log.d("PinturaItem", "Reproduciendo audio: $audioUrl")
-                            //implementar la lógica para reproducir el audio
-
-                        }
-                    }
-                ) {
-                    Icon(Icons.Filled.PlayArrow, contentDescription = "Reproducir")
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Reproducir audio", style = MaterialTheme.typography.bodyMedium)
-            }
-        }
-    }
-}
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
