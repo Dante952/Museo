@@ -1,5 +1,6 @@
-package com.example.museo.componets
+package com.example.museo.view.componets
 
+import PaintingViewModel
 import android.media.MediaPlayer
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -23,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -31,6 +33,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -46,14 +49,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import com.example.museo.R
+import com.example.museo.model.Painting
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun CardGrid(items: List<String>) {
+fun CardGrid(viewModel: PaintingViewModel) {
     var expandedIndex by remember { mutableStateOf<Int?>(null) }
     var searchText by remember { mutableStateOf("") }
-    val filteredItems = items.filter { it.contains(searchText, ignoreCase = true) }
+    val filteredItems = viewModel.getPaintings()
 
     Box {
         SearchNav(searchText) { searchText = it }
@@ -68,7 +72,7 @@ fun CardGrid(items: List<String>) {
             items(filteredItems.size) { index ->
                 CardItem(
                     index = index,
-                    content = filteredItems[index],
+                    content = filteredItems.get(index),
                     expanded = expandedIndex == index
                 ) {
                     expandedIndex = if (expandedIndex == index) null else index
@@ -78,7 +82,8 @@ fun CardGrid(items: List<String>) {
         expandedIndex?.let { index ->
             ExpandedCard(
                 index = index,
-                content = filteredItems[index],
+                content = filteredItems.get(0),
+                viewModel= viewModel,
                 onDismiss = { expandedIndex = null }
             )
         }
@@ -86,7 +91,7 @@ fun CardGrid(items: List<String>) {
 }
 
 @Composable
-fun CardItem(index: Int, content: String, expanded: Boolean, onClick: () -> Unit) {
+fun CardItem(index: Int, content: Painting, expanded: Boolean, onClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(8.dp),
@@ -108,13 +113,13 @@ fun CardItem(index: Int, content: String, expanded: Boolean, onClick: () -> Unit
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Headline #$index",
+                text = content.title,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.padding(vertical = 4.dp)
             )
             Text(
-                text = content,
+                text = content.author,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -123,13 +128,15 @@ fun CardItem(index: Int, content: String, expanded: Boolean, onClick: () -> Unit
 }
 
 @Composable
-fun ExpandedCard(index: Int, content: String, onDismiss: () -> Unit) {
+fun ExpandedCard(index: Int, content: Painting,viewModel: PaintingViewModel, onDismiss: () -> Unit) {
     val context = LocalContext.current
     val mediaPlayer = remember { MediaPlayer.create(context, R.raw.sample_audio) }
     var isPlaying by remember { mutableStateOf(false) }
     var sliderPosition by remember { mutableStateOf(0f) }
     val maxSliderValue = mediaPlayer.duration.toFloat()
     val coroutineScope = rememberCoroutineScope()
+
+    var editableTitle by remember { mutableStateOf(content.title) }
 
     LaunchedEffect(isPlaying) {
         if (isPlaying) {
@@ -184,14 +191,20 @@ fun ExpandedCard(index: Int, content: String, onDismiss: () -> Unit) {
                             .background(MaterialTheme.colorScheme.primaryContainer)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Headline #$index",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.padding(vertical = 4.dp)
+                    TextField(
+                        value = editableTitle,
+                        onValueChange = { value ->
+                            editableTitle = value
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        textStyle = MaterialTheme.typography.headlineSmall,
+                        singleLine = true
                     )
+
                     Text(
-                        text = content,
+                        text = content.author,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(vertical = 4.dp)
@@ -222,10 +235,22 @@ fun ExpandedCard(index: Int, content: String, onDismiss: () -> Unit) {
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "More details about item #$index. Here you can add additional information that will be shown when the card is expanded.",
+                        text = content.description,
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = {
+                            // Enviar el título editable al ViewModel para actualizar
+                            viewModel.updateTitle(index, editableTitle)
+                            // Cerrar la tarjeta expandida
+                            onDismiss()
+                        },
+                        modifier = Modifier.align(Alignment.End)
+                    ) {
+                        Text(text = "Guardar")
+                    }
                 }
             }
         }

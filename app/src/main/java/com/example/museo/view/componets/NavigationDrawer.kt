@@ -1,4 +1,4 @@
-package com.example.museo.componets
+package com.example.museo.view.componets
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
