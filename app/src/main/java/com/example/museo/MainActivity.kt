@@ -49,7 +49,24 @@ fun MainScreen(firebaseManager: FirebaseManager) {
     val scope = rememberCoroutineScope()
 
     var selectedScreen by remember { mutableStateOf("Home") }
-    var currentGalleryScreen by remember { mutableStateOf("Gallery") }  
+    var currentGalleryScreen by remember { mutableStateOf("Gallery") }
+
+    var pinturas by remember { mutableStateOf<List<PaintingData>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        firebaseManager.obtenerPinturas(
+            onSuccess = { listaPinturas ->
+                pinturas = listaPinturas
+                // Log para verificar los datos obtenidos
+                listaPinturas.forEach {
+                    Log.d("MainScreen", "Pintura: $it")
+                }
+            },
+            onFailure = { exception ->
+                Log.e("MainScreen", "Error al obtener pinturas", exception)
+            }
+        )
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -74,6 +91,8 @@ fun MainScreen(firebaseManager: FirebaseManager) {
                     )
                 },
 
+
+
                 content = { paddingValues ->
                     Column(modifier = Modifier.padding(paddingValues)) {
                         when (selectedScreen) {
@@ -82,7 +101,7 @@ fun MainScreen(firebaseManager: FirebaseManager) {
                                 "Gallery" -> GalleryScreen { roomId ->
                                     currentGalleryScreen = "Room"
                                 }
-                                "Room" -> RoomScreen {
+                                "Room" -> RoomScreen(items = pinturas) {
                                     currentGalleryScreen = "Gallery"
                                 }
                             }
@@ -115,11 +134,7 @@ fun HomeScreen(firebaseManager: FirebaseManager) {
             }
         )
     }
-
-
     CardGrid(items = pinturas)
-
-
 }
 
 @Composable

@@ -37,8 +37,8 @@ fun GalleryScreen(onRoomSelected: (Int) -> Unit = {}) {
         ) {
             // Título
             Text(
-                text = "Mapa de la galería",
-                fontSize = 24.sp,
+                text = "MAPA DE LA GALERÍA",
+                fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .padding(8.dp)
@@ -155,12 +155,13 @@ fun GalleryScreen(onRoomSelected: (Int) -> Unit = {}) {
             Column(
                 modifier = Modifier.padding(8.dp)
             ) {
-                Text("Leyenda:", fontSize = 16.sp)
-                Text("Salón 1: Pinturas", fontSize = 16.sp)
-                Text("Salón 2: Estatuas", fontSize = 16.sp)
-                Text("Salón 3: Lienzos", fontSize = 16.sp)
-                Text("Salón 4: Fotografías", fontSize = 16.sp)
-                Text("Salón 5: Esculturas", fontSize = 16.sp)
+                var size = 24.sp
+                Text("Leyenda:", fontSize = 30.sp, fontWeight = FontWeight.Bold)
+                Text("Salón 1: Pinturas", fontSize = size)
+                Text("Salón 2: Estatuas", fontSize = size)
+                Text("Salón 3: Lienzos", fontSize = size)
+                Text("Salón 4: Fotografías", fontSize = size)
+                Text("Salón 5: Esculturas", fontSize = size)
             }
         }
     }
