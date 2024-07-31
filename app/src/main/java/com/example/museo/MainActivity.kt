@@ -23,18 +23,17 @@ import com.example.museo.componets.DrawerContent
 import com.example.museo.componets.GoogleMapComposable
 import com.example.museo.data.FirebaseManager
 import com.example.museo.data.PaintingData
+import com.example.museo.data.Pintura
+import com.example.museo.data.RetrofitClient
 import com.example.museo.ui.theme.MuseoTheme
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
-
-    private val firebaseManager = FirebaseManager()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MuseoTheme {
-                MainScreen(firebaseManager)
+                MainScreen()
             }
         }
     }
@@ -42,7 +41,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(firebaseManager: FirebaseManager) {
+fun MainScreen() {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -74,7 +73,7 @@ fun MainScreen(firebaseManager: FirebaseManager) {
                 content = { paddingValues ->
                     Column(modifier = Modifier.padding(paddingValues)) {
                         when (selectedScreen) {
-                            "Home" -> HomeScreen(firebaseManager)
+                            "Home" -> HomeScreen()
                             "Location" -> LocationScreen()
                             "About" -> AboutScreen()
                         }
@@ -87,29 +86,22 @@ fun MainScreen(firebaseManager: FirebaseManager) {
 
 
 @Composable
-fun HomeScreen(firebaseManager: FirebaseManager) {
+fun HomeScreen() {
 
-    var pinturas by remember { mutableStateOf<List<PaintingData>>(emptyList()) }
+    var pinturas by remember { mutableStateOf<List<Pintura>>(emptyList()) }
+    val apiService = RetrofitClient.apiService
 
     LaunchedEffect(Unit) {
-        firebaseManager.obtenerPinturas(
-            onSuccess = { listaPinturas ->
-                pinturas = listaPinturas
-                // Log para verificar los datos obtenidos
-                listaPinturas.forEach {
-                    Log.d("MainScreen", "Pintura: $it")
-                }
-            },
-            onFailure = { exception ->
-                Log.e("MainScreen", "Error al obtener pinturas", exception)
-            }
-        )
+        try {
+            // Llama a la función suspendida
+            var response = apiService.getPinturas()
+            pinturas = response
+            Log.d("HomeScreen", "Pinturas obtenidas: ${pinturas.size}")
+        } catch (e: Exception) {
+            Log.e("HomeScreen", "Error al obtener pinturas", e)
+        }
     }
-
-
     CardGrid(items = pinturas)
-
-
 }
 
 @Composable
@@ -128,6 +120,6 @@ fun AboutScreen() {
 @Composable
 fun DefaultPreview() {
     MuseoTheme {
-        MainScreen(FirebaseManager())
+        MainScreen()
     }
 }

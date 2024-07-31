@@ -49,12 +49,13 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.example.museo.R
-import com.example.museo.data.PaintingData
+
+import com.example.museo.data.Pintura
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun CardGrid(items: List<PaintingData>) {
+fun CardGrid(items: List<Pintura>) {
     var expandedIndex by remember { mutableStateOf<Int?>(null) }
     var searchText by remember { mutableStateOf("") }
     val filteredItems = items//.filter { it.contains(searchText, ignoreCase = true) }
@@ -90,7 +91,7 @@ fun CardGrid(items: List<PaintingData>) {
 }
 
 @Composable
-fun CardItem(index: Int, content: PaintingData, expanded: Boolean, onClick: () -> Unit) {
+fun CardItem(index: Int, content: Pintura, expanded: Boolean, onClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(8.dp),
@@ -111,20 +112,20 @@ fun CardItem(index: Int, content: PaintingData, expanded: Boolean, onClick: () -
                     .background(MaterialTheme.colorScheme.primaryContainer)
             ) {
                 Image(
-                    painter = rememberAsyncImagePainter(model = content.imageUrl),
+                    painter = rememberAsyncImagePainter(model = content.imagenURL),
                     contentDescription = "Image #$index",
                     modifier = Modifier.fillMaxSize()
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = content.name,
+                text = content.titulo,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.padding(vertical = 4.dp)
             )
             Text(
-                text = content.author,
+                text = content.autor,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -133,7 +134,7 @@ fun CardItem(index: Int, content: PaintingData, expanded: Boolean, onClick: () -
 }
 
 @Composable
-fun ExpandedCard(index: Int, content: PaintingData, onDismiss: () -> Unit) {
+fun ExpandedCard(index: Int, content: Pintura, onDismiss: () -> Unit) {
     val context = LocalContext.current
     val mediaPlayer = remember { MediaPlayer() }
     var isPlaying by remember { mutableStateOf(false) }
@@ -143,7 +144,7 @@ fun ExpandedCard(index: Int, content: PaintingData, onDismiss: () -> Unit) {
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        mediaPlayer.setDataSource(content.audioUrl)
+        mediaPlayer.setDataSource(content.audioURL)
         mediaPlayer.setOnPreparedListener {
             isPrepared = true
         }
@@ -203,20 +204,20 @@ fun ExpandedCard(index: Int, content: PaintingData, onDismiss: () -> Unit) {
                             .background(MaterialTheme.colorScheme.primaryContainer)
                     ) {
                         Image(
-                            painter = rememberAsyncImagePainter(model = content.imageUrl),
+                            painter = rememberAsyncImagePainter(model = content.imagenURL),
                             contentDescription = "Image #$index",
                             modifier = Modifier.fillMaxSize()
                         )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = content.name,
+                        text = content.titulo,
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
                     Text(
-                        text = content.author,
+                        text = content.autor,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(vertical = 4.dp)
@@ -247,7 +248,7 @@ fun ExpandedCard(index: Int, content: PaintingData, onDismiss: () -> Unit) {
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = content.description,
+                        text = content.descripcion,
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
