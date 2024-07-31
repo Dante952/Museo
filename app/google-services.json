@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "53246070798",
-    "project_id": "appmuseopinturas",
-    "storage_bucket": "appmuseopinturas.appspot.com"
+    "project_number": "709352724319",
+    "project_id": "pinturas-8bf11",
+    "storage_bucket": "pinturas-8bf11.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:53246070798:android:fa3ce76166d2fc8e65ac5f",
+        "mobilesdk_app_id": "1:709352724319:android:d0f710a2ea26e9426348ea",
         "android_client_info": {
           "package_name": "com.example.museo"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAOrRw0i3tbWVJrMPvJbN3TKn0Hmql6nHo"
+          "current_key": "AIzaSyDz40hjTyOgbP36-4J9ieEhDJxdSQvTLU8"
         }
       ],
       "services": {

@@ -14,3 +14,4 @@
 .externalNativeBuild
 .cxx
 ../AndroidBeacon/local.properties
+node_modules/
