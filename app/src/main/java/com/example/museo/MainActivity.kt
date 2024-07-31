@@ -21,6 +21,7 @@ import coil.compose.rememberImagePainter
 import com.example.museo.componets.CardGrid
 import com.example.museo.componets.DrawerContent
 import com.example.museo.componets.GoogleMapComposable
+import com.example.museo.componets.galleryMap.RoomScreen
 import com.example.museo.data.FirebaseManager
 import com.example.museo.data.PaintingData
 import com.example.museo.ui.theme.MuseoTheme
@@ -75,7 +76,7 @@ fun MainScreen(firebaseManager: FirebaseManager) {
                     Column(modifier = Modifier.padding(paddingValues)) {
                         when (selectedScreen) {
                             "Home" -> HomeScreen(firebaseManager)
-                            "Location" -> LocationScreen()
+                            "Location" -> RoomScreen()
                             "About" -> AboutScreen()
                         }
                     }
