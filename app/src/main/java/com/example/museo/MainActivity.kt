@@ -21,6 +21,7 @@ import coil.compose.rememberImagePainter
 import com.example.museo.componets.CardGrid
 import com.example.museo.componets.DrawerContent
 import com.example.museo.componets.GoogleMapComposable
+import com.example.museo.componets.galleryMap.GalleryScreen
 import com.example.museo.componets.galleryMap.RoomScreen
 import com.example.museo.data.FirebaseManager
 import com.example.museo.data.PaintingData
@@ -48,6 +49,7 @@ fun MainScreen(firebaseManager: FirebaseManager) {
     val scope = rememberCoroutineScope()
 
     var selectedScreen by remember { mutableStateOf("Home") }
+    var currentGalleryScreen by remember { mutableStateOf("Gallery") }  
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -76,7 +78,14 @@ fun MainScreen(firebaseManager: FirebaseManager) {
                     Column(modifier = Modifier.padding(paddingValues)) {
                         when (selectedScreen) {
                             "Home" -> HomeScreen(firebaseManager)
-                            "Location" -> RoomScreen()
+                            "Location" -> when (currentGalleryScreen) {
+                                "Gallery" -> GalleryScreen { roomId ->
+                                    currentGalleryScreen = "Room"
+                                }
+                                "Room" -> RoomScreen {
+                                    currentGalleryScreen = "Gallery"
+                                }
+                            }
                             "About" -> AboutScreen()
                         }
                     }
