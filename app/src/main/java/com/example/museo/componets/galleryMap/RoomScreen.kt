@@ -20,7 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -64,17 +63,6 @@ fun RoomScreen(items: List<Pintura>, roomId: Int, onBack: () -> Unit = {}) {
 
     val paintingsToShow = items.filter { it.salonID == roomId.toString() }
 
-//    // Define las posiciones para cada roomId
-//    val paintingPositions = mapOf(
-//        1 to listOf(Offset(0f, 0f), Offset(120f, 0f)), // Salón de Pinturas
-//        2 to listOf(Offset(0f, 120f), Offset(120f, 120f)), // Salón de Estatuas
-//        3 to listOf(Offset(240f, 0f), Offset(240f, 120f)), // Salón de Lienzos
-//        4 to listOf(Offset(0f, 240f), Offset(120f, 240f)), // Salón de Fotografías
-//        5 to listOf(Offset(240f, 240f), Offset(360f, 240f)) // Salón de Esculturas
-//    )
-
-//    val currentPaintingPositions = paintingPositions[roomId] ?: listOf(Offset(0f, 0f), Offset(0f, 0f))
-
     MuseoTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             Column(
@@ -115,8 +103,8 @@ fun RoomScreen(items: List<Pintura>, roomId: Int, onBack: () -> Unit = {}) {
                             modifier = Modifier
                                 .size(100.dp)
                                 .offset(
-                                    x = (index * 120).dp,
-                                    y = (index * 120).dp
+                                    x = (index * 340).dp,
+                                    y = (index * 340).dp
                                 )
                                 .clickable {
                                     selectedPainting = painting
