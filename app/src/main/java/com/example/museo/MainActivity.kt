@@ -21,8 +21,8 @@ import coil.compose.rememberImagePainter
 import com.example.museo.componets.CardGrid
 import com.example.museo.componets.DrawerContent
 import com.example.museo.componets.GoogleMapComposable
-import com.example.museo.data.FirebaseManager
-import com.example.museo.data.PaintingData
+import com.example.museo.componets.galleryMap.GalleryScreen
+import com.example.museo.componets.galleryMap.RoomScreen
 import com.example.museo.data.Pintura
 import com.example.museo.data.RetrofitClient
 import com.example.museo.ui.theme.MuseoTheme
@@ -44,8 +44,23 @@ class MainActivity : ComponentActivity() {
 fun MainScreen() {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    var currentGalleryScreen by remember { mutableStateOf("Gallery") }
 
     var selectedScreen by remember { mutableStateOf("Home") }
+    var pinturas by remember { mutableStateOf<List<Pintura>>(emptyList()) }
+    val apiService = RetrofitClient.apiService
+    var selectedRoom by remember { mutableStateOf(0) }
+
+    LaunchedEffect(Unit) {
+        try {
+            // Llama a la función suspendida
+            var response = apiService.getPinturas()
+            pinturas = response
+            Log.d("HomeScreen", "Pinturas obtenidas: ${pinturas.size}")
+        } catch (e: Exception) {
+            Log.e("HomeScreen", "Error al obtener pinturas", e)
+        }
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -74,7 +89,15 @@ fun MainScreen() {
                     Column(modifier = Modifier.padding(paddingValues)) {
                         when (selectedScreen) {
                             "Home" -> HomeScreen()
-                            "Location" -> LocationScreen()
+                            "Location" -> when (currentGalleryScreen) {
+                                "Gallery" -> GalleryScreen { roomId ->
+                                    selectedRoom = roomId
+                                    currentGalleryScreen = "Room"
+                                }
+                                "Room" -> RoomScreen(items = pinturas, roomId = selectedRoom) {
+                                    currentGalleryScreen = "Gallery"
+                                }
+                            }
                             "About" -> AboutScreen()
                         }
                     }

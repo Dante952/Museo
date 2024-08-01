@@ -54,7 +54,7 @@ fun GalleryScreen(onRoomSelected: (Int) -> Unit = {}) {
                 Canvas(
                     modifier = Modifier
                         .fillMaxSize()
-                        .clickable { onRoomSelected(1) }
+                        .clickable { onRoomSelected(0) }
                 ) {
                     val padding = 0.dp.toPx()
 
@@ -155,7 +155,7 @@ fun GalleryScreen(onRoomSelected: (Int) -> Unit = {}) {
             Column(
                 modifier = Modifier.padding(8.dp)
             ) {
-                var size = 24.sp
+                val size = 24.sp
                 Text("Leyenda:", fontSize = 30.sp, fontWeight = FontWeight.Bold)
                 Text("Salón 1: Pinturas", fontSize = size)
                 Text("Salón 2: Estatuas", fontSize = size)

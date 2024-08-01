@@ -24,18 +24,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import coil.compose.rememberAsyncImagePainter
 import com.example.museo.componets.ExpandedCard
-import com.example.museo.data.PaintingData
+import com.example.museo.data.Pintura
 import com.example.museo.ui.theme.MuseoTheme
 import kotlin.math.sqrt
 
-
 @Composable
-fun RoomScreen(items: List<PaintingData>, onBack: () -> Unit = {}) {
+fun RoomScreen(items: List<Pintura>,roomId: Int, onBack: () -> Unit = {}) {
     val FACTOR_X = remember { mutableStateOf(0.10) }
     val FACTOR_Y = remember { mutableStateOf(0.10) }
     val ROOM_LENGTH = 600.0
@@ -51,7 +50,16 @@ fun RoomScreen(items: List<PaintingData>, onBack: () -> Unit = {}) {
     FACTOR_Y.value = canvas_height / ROOM_HEIGHT
 
     var showExpandedCard by remember { mutableStateOf(false) }
-    var selectedPainting by remember { mutableStateOf<PaintingData?>(null) }
+    var selectedPainting by remember { mutableStateOf<Pintura?>(null) }
+
+    val roomTitles = listOf(
+        "Salón de Pinturas",
+        "Salón de Estatuas",
+        "Salón de Lienzos",
+        "Salón de Fotografías",
+        "Salón de Esculturas"
+    )
+    val roomTitle = roomTitles.getOrNull(roomId - 1) ?: "Salón"
 
     MuseoTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -64,7 +72,7 @@ fun RoomScreen(items: List<PaintingData>, onBack: () -> Unit = {}) {
             ) {
                 // Título
                 Text(
-                    text = "SALÓN",
+                    text = roomTitle,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
@@ -88,8 +96,8 @@ fun RoomScreen(items: List<PaintingData>, onBack: () -> Unit = {}) {
                     )
                     items.forEachIndexed { index, painting ->
                         Image(
-                            painter = rememberAsyncImagePainter(model = painting.imageUrl),
-                            contentDescription = painting.name,
+                            painter = rememberAsyncImagePainter(model = painting.imagenURL),
+                            contentDescription = painting.descripcion,
                             modifier = Modifier
                                 .size(100.dp)
                                 .offset(
@@ -113,11 +121,15 @@ fun RoomScreen(items: List<PaintingData>, onBack: () -> Unit = {}) {
             }
         }
         if (showExpandedCard && selectedPainting != null) {
-            ExpandedCard(
-                index = items.indexOf(selectedPainting),
-                content = selectedPainting!!,
-                onDismiss = { showExpandedCard = false }
-            )
+            Dialog(
+                onDismissRequest = { showExpandedCard = false }
+            ) {
+                ExpandedCard(
+                    index = items.indexOf(selectedPainting),
+                    content = selectedPainting!!,
+                    onDismiss = { showExpandedCard = false }
+                )
+            }
         }
     }
 }
