@@ -46,7 +46,7 @@ fun MainScreen() {
     val scope = rememberCoroutineScope()
     var currentGalleryScreen by remember { mutableStateOf("Gallery") }
 
-    var selectedScreen by remember { mutableStateOf("Home") }
+    var selectedScreen by remember { mutableStateOf("Catalogo") }
     var pinturas by remember { mutableStateOf<List<Pintura>>(emptyList()) }
     val apiService = RetrofitClient.apiService
     var selectedRoom by remember { mutableStateOf(0) }
@@ -88,8 +88,8 @@ fun MainScreen() {
                 content = { paddingValues ->
                     Column(modifier = Modifier.padding(paddingValues)) {
                         when (selectedScreen) {
-                            "Home" -> HomeScreen()
-                            "Location" -> when (currentGalleryScreen) {
+                            "Catalogo" -> HomeScreen()
+                            "Galería" -> when (currentGalleryScreen) {
                                 "Gallery" -> GalleryScreen { roomId ->
                                     selectedRoom = roomId
                                     currentGalleryScreen = "Room"
@@ -98,7 +98,8 @@ fun MainScreen() {
                                     currentGalleryScreen = "Gallery"
                                 }
                             }
-                            "About" -> AboutScreen()
+                            "Mapa GPS" -> LocationScreen()
+                            "Escaner QR" -> QRScannerScreen()
                         }
                     }
                 }

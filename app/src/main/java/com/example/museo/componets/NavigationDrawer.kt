@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
@@ -48,17 +49,22 @@ fun DrawerContent(onItemSelected: (String) -> Unit) {
 
         DrawerItem(
             icon = Icons.Default.Home,
-            label = "Home",
+            label = "Catalogo",
             onClick = onItemSelected
         )
         DrawerItem(
             icon = Icons.Default.LocationOn,
-            label = "Location",
+            label = "Galería",
+            onClick = onItemSelected
+        )
+        DrawerItem(
+            icon = Icons.Default.ExitToApp,
+            label = "Mapa GPS",
             onClick = onItemSelected
         )
         DrawerItem(
             icon = Icons.Default.Info,
-            label = "About",
+            label = "Escaner QR",
             onClick = onItemSelected
         )
     }

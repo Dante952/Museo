@@ -58,7 +58,7 @@ import kotlinx.coroutines.launch
 fun CardGrid(items: List<Pintura>) {
     var expandedIndex by remember { mutableStateOf<Int?>(null) }
     var searchText by remember { mutableStateOf("") }
-    val filteredItems = items//.filter { it.contains(searchText, ignoreCase = true) }
+    val filteredItems = items.filter { it.titulo.contains(searchText, ignoreCase = true) }
 
     Box {
         SearchNav(searchText) { searchText = it }
