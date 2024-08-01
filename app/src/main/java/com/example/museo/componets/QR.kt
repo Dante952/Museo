@@ -2,6 +2,7 @@ package com.example.museo
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.util.Log
 import android.util.Size
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -17,10 +18,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import com.example.museo.componets.ExpandedCard
+import com.example.museo.data.Pintura
+import com.example.museo.data.RetrofitClient
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -32,6 +37,20 @@ import java.util.concurrent.Executors
 fun QRScannerScreen() {
     val context = LocalContext.current
     val scanResult = remember { mutableStateOf("") }
+    var filteredItems by remember { mutableStateOf<List<Pintura>>(emptyList()) }
+    val apiService = RetrofitClient.apiService
+    val showCard = remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        try {
+            var response = apiService.getPinturas()
+            filteredItems = response
+
+        } catch (e: Exception) {
+
+        }
+    }
+
+
 
     val cameraPermission = remember {
         mutableStateOf(
@@ -57,15 +76,23 @@ fun QRScannerScreen() {
             requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
     } else {
-        QRScanner { result ->
-            scanResult.value = result
-        }
-    }
 
-    Surface {
-        Box(modifier = Modifier.fillMaxSize()) {
-            if (scanResult.value.isNotEmpty()) {
-                Text(text = "Scan Result: ${scanResult.value}")
+
+        Surface(color = MaterialTheme.colorScheme.background) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                QRScanner(onScanResult = { result ->
+                    scanResult.value = result
+                    showCard.value = true
+                })
+
+                if (scanResult.value.isNotEmpty() && showCard.value) {
+                    ExpandedCard(
+                        index = scanResult.value.toInt(),
+                        content = filteredItems.get(scanResult.value.toInt())
+                    ) {
+                        showCard.value = false
+                    }
+                }
             }
         }
     }
@@ -114,6 +141,7 @@ fun QRScanner(onScanResult: (String) -> Unit) {
 @OptIn(ExperimentalGetImage::class)
 fun processImageProxy(imageProxy: ImageProxy, onScanResult: (String) -> Unit) {
     val mediaImage = imageProxy.image
+
     if (mediaImage != null) {
         val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
         val scanner = BarcodeScanning.getClient()

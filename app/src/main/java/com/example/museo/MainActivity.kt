@@ -133,13 +133,6 @@ fun LocationScreen() {
     GoogleMapComposable()
 }
 
-
-
-@Composable
-fun AboutScreen() {
-    Text(text = "About Screen", modifier = Modifier.padding(16.dp))
-}
-
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
