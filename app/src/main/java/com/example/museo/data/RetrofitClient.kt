@@ -32,5 +32,6 @@ data class Pintura(
     val descripcion: String,
     val autor: String,
     val imagenURL: String,
-    val audioURL: String
+    val audioURL: String,
+    val salonID: String
 )

@@ -1,27 +1,30 @@
 package com.example.museo.componets.galleryMap
 
-import android.graphics.Paint
+import android.graphics.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.nativeCanvas
 
 @Preview(showBackground = true)
 @Composable
 fun GalleryScreen(onRoomSelected: (Int) -> Unit = {}) {
+    val dotRects = ArrayList<Rect>()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -50,11 +53,25 @@ fun GalleryScreen(onRoomSelected: (Int) -> Unit = {}) {
                     .weight(1f)
                     .background(Color.Transparent)
                     .padding(16.dp)
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onTap = { tapOffset ->
+                                var index = 0
+                                for (rect in dotRects) {
+                                    if (rect.contains(tapOffset.x.toInt(), tapOffset.y.toInt())) {
+                                        onRoomSelected(index + 1)
+                                        break
+                                    }
+                                    index++
+                                }
+                            }
+                        )
+                    }
             ) {
                 Canvas(
                     modifier = Modifier
                         .fillMaxSize()
-                        .clickable { onRoomSelected(0) }
+                        // .clickable { onRoomSelected(0) }
                 ) {
                     val padding = 0.dp.toPx()
 
@@ -65,8 +82,14 @@ fun GalleryScreen(onRoomSelected: (Int) -> Unit = {}) {
                     }
 
                     // Rectángulo 1 (arriba izquierda)
+                    val rect1 = Rect(
+                        padding.toInt(),
+                        padding.toInt(),
+                        (size.width / 3 - padding).toInt(),
+                        (size.height / 4 - padding).toInt()
+                    )
+                    dotRects.add(rect1)
                     drawRect(
-
                         color = Color.Black,
                         topLeft = Offset(padding, padding),
                         size = Size(
@@ -83,6 +106,13 @@ fun GalleryScreen(onRoomSelected: (Int) -> Unit = {}) {
                     )
 
                     // Rectángulo 2 (arriba derecha)
+                    val rect2 = Rect(
+                        (size.width / 2).toInt(),
+                        padding.toInt(),
+                        (size.width - padding).toInt(),
+                        (size.height / 4 - padding).toInt()
+                    )
+                    dotRects.add(rect2)
                     drawRect(
                         color = Color.Black,
                         topLeft = Offset(size.width / 2, padding),
@@ -100,6 +130,13 @@ fun GalleryScreen(onRoomSelected: (Int) -> Unit = {}) {
                     )
 
                     // Rectángulo 3 (abajo izquierda)
+                    val rect3 = Rect(
+                        padding.toInt(),
+                        (size.height / 3).toInt(),
+                        (size.width / 3 - padding).toInt(),
+                        (size.height / 3 + size.height / 4 - padding).toInt()
+                    )
+                    dotRects.add(rect3)
                     drawRect(
                         color = Color.Black,
                         topLeft = Offset(padding, size.height / 3),
@@ -117,6 +154,13 @@ fun GalleryScreen(onRoomSelected: (Int) -> Unit = {}) {
                     )
 
                     // Rectángulo 4 (derecha centro)
+                    val rect4 = Rect(
+                        (size.width * 2 / 3).toInt(),
+                        (size.height / 4).toInt(),
+                        (size.width - padding).toInt(),
+                        (size.height / 4 + size.height / 6 - padding).toInt()
+                    )
+                    dotRects.add(rect4)
                     drawRect(
                         color = Color.Black,
                         topLeft = Offset(size.width * 2 / 3, size.height / 4),
@@ -134,6 +178,13 @@ fun GalleryScreen(onRoomSelected: (Int) -> Unit = {}) {
                     )
 
                     // Rectángulo 5 (abajo derecha)
+                    val rect5 = Rect(
+                        (size.width / 2).toInt(),
+                        (size.height * 5 / 12).toInt(),
+                        (size.width - padding).toInt(),
+                        (size.height * 5 / 12 + size.height / 6 - padding).toInt()
+                    )
+                    dotRects.add(rect5)
                     drawRect(
                         color = Color.Black,
                         topLeft = Offset(size.width / 2, size.height * 5 / 12),
@@ -150,6 +201,7 @@ fun GalleryScreen(onRoomSelected: (Int) -> Unit = {}) {
                         paint
                     )
                 }
+
             }
             // Leyenda
             Column(

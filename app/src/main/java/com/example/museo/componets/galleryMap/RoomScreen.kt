@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -34,7 +35,7 @@ import com.example.museo.ui.theme.MuseoTheme
 import kotlin.math.sqrt
 
 @Composable
-fun RoomScreen(items: List<Pintura>,roomId: Int, onBack: () -> Unit = {}) {
+fun RoomScreen(items: List<Pintura>, roomId: Int, onBack: () -> Unit = {}) {
     val FACTOR_X = remember { mutableStateOf(0.10) }
     val FACTOR_Y = remember { mutableStateOf(0.10) }
     val ROOM_LENGTH = 600.0
@@ -60,6 +61,19 @@ fun RoomScreen(items: List<Pintura>,roomId: Int, onBack: () -> Unit = {}) {
         "Salón de Esculturas"
     )
     val roomTitle = roomTitles.getOrNull(roomId - 1) ?: "Salón"
+
+    val paintingsToShow = items.filter { it.salonID == roomId.toString() }
+
+//    // Define las posiciones para cada roomId
+//    val paintingPositions = mapOf(
+//        1 to listOf(Offset(0f, 0f), Offset(120f, 0f)), // Salón de Pinturas
+//        2 to listOf(Offset(0f, 120f), Offset(120f, 120f)), // Salón de Estatuas
+//        3 to listOf(Offset(240f, 0f), Offset(240f, 120f)), // Salón de Lienzos
+//        4 to listOf(Offset(0f, 240f), Offset(120f, 240f)), // Salón de Fotografías
+//        5 to listOf(Offset(240f, 240f), Offset(360f, 240f)) // Salón de Esculturas
+//    )
+
+//    val currentPaintingPositions = paintingPositions[roomId] ?: listOf(Offset(0f, 0f), Offset(0f, 0f))
 
     MuseoTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -94,7 +108,7 @@ fun RoomScreen(items: List<Pintura>,roomId: Int, onBack: () -> Unit = {}) {
                         positionX = pointX_position.value,
                         positionY = pointY_position.value
                     )
-                    items.forEachIndexed { index, painting ->
+                    paintingsToShow.forEachIndexed { index, painting ->
                         Image(
                             painter = rememberAsyncImagePainter(model = painting.imagenURL),
                             contentDescription = painting.descripcion,
